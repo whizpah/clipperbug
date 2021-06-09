@@ -3,11 +3,7 @@ package clipperbug
 import (
 	"fmt"
 	clipper "github.com/ctessum/go.clipper"
-	"gocv.io/x/gocv"
-	"image"
 
-	"image/color"
-	"math"
 	"testing"
 )
 
@@ -147,85 +143,18 @@ func TestClipperIntersection(t *testing.T) {
 	}
 	paths2 := clipper.Paths{
 		{{6000, 19800}, {6200, 19800}, {6200, 20000}, {6000, 20000}},
-		//{{6500, 19800}, {6700, 19800}, {6700, 20000}, {6500, 20000}},
 	}
-	offsetX := math.Min(float64(paths1[0][0].X), float64(paths2[0][0].X))*-1 + 50
-	offsetY := math.Min(float64(paths1[0][0].Y), float64(paths2[0][0].Y))*-1 + 50
-
-	var adjustedPaths1, adjustedPaths2 clipper.Paths
-
-	mult := clipper.CInt(1)
-	for _, path1 := range paths1 {
-		var p1 clipper.Path
-		for _, p := range path1 {
-			ip := clipper.IntPoint{X: mult * (p.X + clipper.CInt(offsetX)), Y: mult * (p.Y + clipper.CInt(offsetY))}
-			p1 = append(p1, &ip)
-		}
-		adjustedPaths1 = append(adjustedPaths1, p1)
-	}
-	for _, path2 := range paths2 {
-		var p2 clipper.Path
-		for _, p := range path2 {
-			ip := clipper.IntPoint{X: mult * (p.X + clipper.CInt(offsetX)), Y: mult * (p.Y + clipper.CInt(offsetY))}
-			p2 = append(p2, &ip)
-		}
-		adjustedPaths2 = append(adjustedPaths2, p2)
-	}
-	fmt.Println("Adjusted paths:")
-	fmt.Println(adjustedPaths1)
-	fmt.Println(adjustedPaths2)
-	fmt.Println("Original paths:")
-	fmt.Println(paths1)
-	fmt.Println(paths2)
-
-	var distance1 float64
-	if len(paths1) > 50 {
-		distance1 = 1.415
-	} else {
-		distance1 = 1.415
-	}
-	c := clipper.NewClipper(clipper.IoStrictlySimple)
-
-	img := gocv.NewMatWithSize(1250, 1250, gocv.MatTypeCV8UC3)
-	window := gocv.NewWindow("Clipper test")
-	window.ResizeWindow(1000, 1000)
-	drawPolygonContour(&img, c.CleanPolygons(adjustedPaths2, 1.415), color.RGBA{R: 255})
-	drawPolygonContour(&img, c.CleanPolygons(adjustedPaths1, distance1), color.RGBA{G: 255, B: 255, R: 255})
-
-	window.IMShow(img)
-	window.WaitKey(0)
 
 	fmt.Println("Attempting to perform Clipper.Execute1")
 
-	c.Clear()
-	c.AddPaths(c.CleanPolygons(paths1, distance1), clipper.PtSubject, true)
+	c := clipper.NewClipper(clipper.IoStrictlySimple)
+	c.AddPaths(c.CleanPolygons(paths1, 2), clipper.PtSubject, true)
 	c.AddPaths(c.CleanPolygons(paths2, 2), clipper.PtClip, true)
 
 	result, succeeded := c.Execute1(clipper.CtIntersection, clipper.PftEvenOdd, clipper.PftEvenOdd)
 	if !succeeded {
-		fmt.Printf("particlebank.Overlaps failed to perform clipper.Execute1\n")
+		fmt.Printf("Failed to perform clipper.Execute1\n")
 	}
 
-	fmt.Println("Result\n", len(result), result)
-
-}
-
-func drawPolygonContour(img *gocv.Mat, paths clipper.Paths, c color.RGBA) {
-	pv := ClipperPathsToPointsVector(paths)
-	defer pv.Close()
-	gocv.Polylines(img, pv, true, c, 1)
-}
-
-func ClipperPathsToPointsVector(paths clipper.Paths) gocv.PointsVector {
-	// First transform the path to image.edge
-	var pts [][]image.Point
-	for _, pathv := range paths {
-		var pt []image.Point
-		for _, p := range pathv {
-			pt = append(pt, image.Point{X: int(p.X), Y: int(p.Y)})
-		}
-		pts = append(pts, pt)
-	}
-
-	return gocv.NewPointsVectorFromPoints(pts)
+	fmt.Println("Successfully performed clipper.Execute1. Result\n", result)
 }
