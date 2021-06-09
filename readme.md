@@ -58,9 +58,22 @@ if dups != nil {
 
 The attached test `TestClipperIntersection`showcases just one of the many polygons that cause this issue.
 
-To run the program (you might have to download gocv and clipper first):
+To run the program (you might have to download clipper first):
 
 `go test -v -run TestClipperIntersection`
+
+# What I've tried so far
+
+## Using CleanPolygons() and IoStrictlySimple
+(tips from from: http://www.angusj.com/delphi/clipper/documentation/Docs/Overview/Rounding.htm)
+
+I have tried using different distances in CleanPolygons, based on the complexity of the polygon. For example taking a fraction of the 
+total polygon count as the distance value.
+Every time I adjust the distance settings to get past one of the obstacles, I wind up with a new problem.
+This approach doesn't seem very robust.
+
+## Compiling with both 64- and 32-bit
+Same problem in both binary versions
 
 # One of the culprits
 ![alt text](clipper_test.png)
