@@ -61,3 +61,6 @@ The attached test `TestClipperIntersection`showcases just one of the many polygo
 To run the program (you might have to download gocv and clipper first):
 
 `go test -v -run TestClipperIntersection`
+
+# One of the culprits
+![alt text](clipper_test.png)
