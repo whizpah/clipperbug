@@ -1,3 +1,6 @@
+## Update 2021-06-14
+After taking this problem to the Clipper Sourceforge discussion board, the problem seems to only exist in the Golang port of the library. See more details in the discussion: https://sourceforge.net/p/polyclipping/discussion/1148419/thread/408b27d968/?limit=25
+
 # Problem with Clipper and Intersect on certain polygons
 
 I'm working on a project with a lot of polygons with different shapes and sizes. Clipper works for 99% of them, but 
